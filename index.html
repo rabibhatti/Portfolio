@@ -3,32 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rabi Bhatti-Portfolio</title>
+    <title>Rabi Bhatti - Portfolio</title>
     <!-- External Fonts and Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         /* --- CSS STYLES --- */
         :root {
-            --primary-color: #6a5acd; /* A nice purple */
+            --primary-gradient: linear-gradient(45deg, #6a5acd, #836FFF);
+            --primary-color: #6a5acd;
             --background-color: #f4f4f9;
             --text-color: #333;
-            --card-bg-color: #ffffff;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --shadow-color-hover: rgba(0, 0, 0, 0.2);
-            --border-color: #e0e0e0;
+            --card-bg-color: rgba(255, 255, 255, 0.6);
+            --card-border-color: rgba(255, 255, 255, 0.9);
+            --shadow-color: rgba(106, 90, 205, 0.15);
+            --shadow-color-hover: rgba(106, 90, 205, 0.3);
         }
 
         body.dark-theme {
-            --background-color: #1a1a2e;
+            --primary-gradient: linear-gradient(45deg, #ffda0b, #ffbb00);
+            --primary-color: #836FFF;
+            --background-color: #12121c;
             --text-color: #e0e0e0;
-            --card-bg-color: #16213e;
-            --shadow-color: rgba(0, 0, 0, 0.4);
-            --shadow-color-hover: rgba(0, 0, 0, 0.6);
-            --border-color: #2a3b59;
+            --card-bg-color: rgba(22, 33, 62, 0.5);
+            --card-border-color: rgba(42, 59, 89, 0.7);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --shadow-color-hover: rgba(0, 0, 0, 0.5);
         }
 
         * {
@@ -37,20 +40,39 @@
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
+        
+        html {
+            scroll-behavior: smooth;
+        }
 
         body {
             background-color: var(--background-color);
             color: var(--text-color);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.4s ease, color 0.4s ease;
             perspective: 1500px;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, var(--primary-color) 0%, rgba(106,90,205,0) 70%);
+            border-radius: 50%;
+            top: -10vw;
+            left: -10vw;
+            opacity: 0.3;
+            filter: blur(80px);
+            z-index: -1;
+            transition: background 0.4s ease;
         }
 
-        /* --- Theme Toggle Button --- */
-        .theme-toggle {
+        /* --- UI Buttons (Theme & Back) --- */
+        .ui-button {
             position: fixed;
-            top: 20px;
-            right: 20px;
             background-color: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
             color: var(--primary-color);
             width: 50px;
             height: 50px;
@@ -59,86 +81,113 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 4px 15px var(--shadow-color);
+            box-shadow: 0 4px 20px var(--shadow-color);
             z-index: 1000;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .ui-button:hover {
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 8px 30px var(--shadow-color-hover);
         }
 
-        .theme-toggle:hover {
-            transform: translateY(-5px) scale(1.1);
-            box-shadow: 0 8px 25px var(--shadow-color-hover);
+        .theme-toggle {
+            top: 20px;
+            right: 20px;
+        }
+        
+        /* NEW: Back Button Style */
+        .back-button {
+            top: 20px;
+            left: 20px;
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none; /* Not clickable when hidden */
+        }
+        .back-button.visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto; /* Clickable when visible */
+        }
+        
+        .theme-toggle i.rotating {
+            animation: rotateIcon 0.5s ease-in-out;
+        }
+        @keyframes rotateIcon {
+            from { transform: rotate(0deg) scale(0.8); }
+            to { transform: rotate(360deg) scale(1); }
         }
 
         /* --- Header & Navigation --- */
         .main-header {
             position: fixed;
-            bottom: 20px;
+            top: 25px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 999;
         }
-
         .main-header nav {
-            background-color: var(--card-bg-color);
-            padding: 10px 20px;
-            border-radius: 30px;
-            box-shadow: 0 5px 20px var(--shadow-color);
+            background: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 50px;
+            box-shadow: 0 8px 32px var(--shadow-color);
             display: flex;
-            gap: 15px;
+            gap: 10px;
+            transition: all 0.3s ease;
         }
-
         .main-header nav a {
             text-decoration: none;
             color: var(--text-color);
-            padding: 10px 20px;
-            border-radius: 20px;
+            padding: 12px 22px;
+            border-radius: 30px;
             font-weight: 500;
             position: relative;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, background 0.3s ease;
             cursor: pointer;
         }
-
         .main-header nav a.active,
         .main-header nav a:hover {
-            color: var(--primary-color);
-        }
-
-        .main-header nav a.active::before {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 6px;
-            height: 6px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
+            color: #fff;
+            background: var(--primary-gradient);
         }
 
         /* --- Page Section Management --- */
         .page-section {
-            display: none; /* Hide all pages by default */
-            min-height: 80vh;
-            max-width: 1100px;
+            display: none;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 40px;
-            animation: fadeIn 0.8s ease-out;
+            padding: 100px 40px 140px 40px;
+            animation: fadeInUp 0.7s ease-out forwards;
         }
-        
         .page-section.active {
-            display: block; /* Show the active page */
+            display: block;
+        }
+        #home.page-section.active {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 60px;
+            padding-bottom: 60px;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         h2 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             text-align: center;
-            font-size: 2.5rem;
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
 
         /* --- Home Page --- */
@@ -147,85 +196,90 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            min-height: 80vh; /* Ensure it takes up viewport height */
+            flex-grow: 1;
         }
-
         .hero-text {
             transform-style: preserve-3d;
             transition: transform 0.5s ease;
         }
-
         .hero-text h1 {
-            font-size: 5rem;
+            font-size: 6rem;
             font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--primary-color);
+            letter-spacing: 1px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 10px;
         }
-
         .hero-text p {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             font-weight: 300;
         }
 
         /* --- About & Contact Pages --- */
         .about-section-content, .contact-section-content {
-            background-color: var(--card-bg-color);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px var(--shadow-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+            backdrop-filter: blur(10px);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px var(--shadow-color);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
-        
         .about-section-content:hover, .contact-section-content:hover {
-             transform: translateY(-10px) rotateX(2deg) rotateY(-2deg);
-             box-shadow: 0 15px 40px var(--shadow-color-hover);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px var(--shadow-color-hover);
         }
-
         .about-section-content p, .contact-section-content p {
-            line-height: 1.8;
+            line-height: 1.9;
             margin-bottom: 20px;
             text-align: center;
+            font-size: 1.1rem;
         }
 
+        /* --- Contact Links & Cards --- */
         .contact-links {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             margin-top: 30px;
             flex-wrap: wrap;
         }
-
         .contact-card {
             background-color: var(--background-color);
             color: var(--text-color);
             text-decoration: none;
             padding: 30px;
-            border-radius: 15px;
-            width: 200px;
+            border-radius: 20px;
+            width: 240px;
             text-align: center;
             box-shadow: 0 5px 15px var(--shadow-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
         }
-
         .contact-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 10px 25px var(--shadow-color-hover);
+            transform: translateY(-12px) scale(1.05);
+            box-shadow: 0 12px 28px var(--shadow-color-hover);
             color: var(--primary-color);
         }
-
         .contact-card i {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 15px;
+        }
+        .contact-card h6 {
+            font-weight: 400;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            opacity: 0.8;
+            word-break: break-all;
         }
 
         /* --- Projects Page --- */
         .project-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 40px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
         }
-
         .project-item {
             background-color: var(--card-bg-color);
             border-radius: 15px;
@@ -234,20 +288,20 @@
             cursor: pointer;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
             aspect-ratio: 4 / 3;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out forwards;
+            animation-delay: calc(var(--i) * 0.08s);
         }
-
         .project-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             transition: transform 0.4s ease;
         }
-
         .project-item:hover {
-            transform: translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.03);
+            transform: translateY(-10px) scale(1.03);
             box-shadow: 0 15px 40px var(--shadow-color-hover);
         }
-
         .project-item:hover img {
             transform: scale(1.1);
         }
@@ -257,23 +311,23 @@
             display: none;
             position: fixed;
             z-index: 1001;
-            padding-top: 50px;
+            padding: 20px;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(18, 18, 28, 0.98);
+            backdrop-filter: blur(8px);
             animation: zoomIn 0.3s ease;
         }
-
         .modal-content {
             margin: auto;
             display: block;
-            max-width: 80%;
-            max-height: 85%;
+            max-width: 95vw;
+            max-height: 95vh;
+            border-radius: 10px;
         }
-
         .close-button {
             position: absolute;
             top: 20px;
@@ -284,15 +338,18 @@
             transition: 0.3s;
             cursor: pointer;
         }
-
+        .close-button:hover {
+            color: var(--primary-color);
+            transform: scale(1.2);
+        }
         @keyframes zoomIn {
-            from { transform: scale(0); }
-            to { transform: scale(1); }
+            from { transform: scale(0.8); opacity: 0;}
+            to { transform: scale(1); opacity: 1;}
         }
 
         /* --- Loader --- */
         .loader {
-            border: 5px solid #f3f3f3;
+            border: 5px solid rgba(128, 128, 128, 0.2);
             border-top: 5px solid var(--primary-color);
             border-radius: 50%;
             width: 50px;
@@ -300,20 +357,51 @@
             animation: spin 1s linear infinite;
             margin: 40px auto;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 1024px) {
+            .hero-text h1 { font-size: 5rem; }
+            .hero-text p { font-size: 1.5rem; }
+        }
+        @media (max-width: 768px) {
+            .page-section { padding: 80px 25px 120px 25px; }
+            #home.page-section.active { padding: 60px 25px; }
+            h2 { font-size: 2.5rem; }
+            .hero-text h1 { font-size: 3.5rem; }
+            .hero-text p { font-size: 1.2rem; }
+            .main-header nav a { padding: 10px 18px; }
+        }
+        @media (max-width: 480px) {
+            .page-section { padding: 80px 15px 120px 15px; }
+            .ui-button { width: 45px; height: 45px; }
+            .theme-toggle { top: 15px; right: 15px; }
+            .back-button { top: 15px; left: 15px; }
+            h2 { font-size: 2rem; }
+            .hero-text h1 { font-size: 2.8rem; line-height: 1.2; }
+            .hero-text p { font-size: 1rem; }
+            .main-header { bottom: 15px; width: calc(100% - 30px); }
+            .main-header nav { width: 100%; justify-content: space-around; gap: 0; padding: 8px; }
+            .main-header nav a { padding: 8px 12px; font-size: 0.9rem; }
+            .contact-links { flex-direction: column; align-items: center; gap: 20px; }
+            .contact-card { width: 100%; max-width: 280px; }
+        }
     </style>
 </head>
 <body>
+    <!-- NEW: Back Button -->
+    <div id="back-button" class="ui-button back-button" role="button" aria-label="Go back">
+        <i class="fas fa-arrow-left"></i>
+    </div>
+
     <!-- Theme Toggle Button -->
-    <div id="theme-toggle" class="theme-toggle">
+    <div id="theme-toggle" class="ui-button theme-toggle" role="button" aria-label="Toggle color theme">
         <i class="fas fa-moon"></i>
     </div>
 
-    <!-- Floating Navigation -->
     <header class="main-header">
         <nav>
             <a data-page="home" class="active">Home</a>
@@ -323,127 +411,81 @@
         </nav>
     </header>
 
-    <!-- Main Content Area where pages will be swapped -->
     <main id="app-container">
-        <!-- Home Page Section -->
+        <!-- All Page Sections remain the same -->
         <section id="home" class="page-section active">
-            <div class="home-hero">
-                <div class="hero-text">
-                    <h1>Rabi Umer Bhatti</h1>
-                    <p>Creative Graphic Designer</p>
-                </div>
-            </div>
+            <div class="home-hero"><div class="hero-text"><h1>Rabi Umer Bhatti</h1><p>Creative Graphic Designer</p></div></div>
         </section>
-
-        <!-- About Page Section -->
         <section id="about" class="page-section">
-            <div class="about-section-content">
-                <h2>About Me</h2>
-                <p>
-                Hi, I'm Rabi Umer – A Creative Graphic Designer
-With 1 year of hands-on experience, I specialize in turning ideas into eye-catching visuals. From branding and social media graphics to logo design and marketing materials, I blend creativity with strategy to deliver designs that stand out and connect with your audience. Passionate about clean aesthetics and modern design trends, I’m always exploring new techniques to bring fresh perspectives to every project.
-
-Let’s create something impactful together!
-                </p>
-                <p>
-                   
-                </p>
-            </div>
+            <div class="about-section-content"><h2>About Me</h2><p>Hi, I'm Rabi Umer – A Creative Graphic Designer. With 1 year of hands-on experience, I specialize in turning ideas into eye-catching visuals. From branding and social media graphics to logo design and marketing materials, I blend creativity with strategy to deliver designs that stand out and connect with your audience.</p><p>Passionate about clean aesthetics and modern design trends, I’m always exploring new techniques to bring fresh perspectives to every project. Let’s create something impactful together!</p></div>
         </section>
-
-        <!-- Projects Page Section -->
         <section id="projects" class="page-section">
-            <h2>My Work</h2>
-            <div id="loader" class="loader"></div>
-            <div class="project-grid" id="project-grid">
-                <!-- Project images will be loaded here by JavaScript -->
-            </div>
+            <h2>My Work</h2><div id="loader" class="loader"></div><div class="project-grid" id="project-grid"></div>
         </section>
-
-        <!-- Contact Page Section -->
         <section id="contact" class="page-section">
-            <div class="contact-section-content">
-                <h2>Get In Touch</h2>
-                <p>I'm currently available for freelance work and open to discussing new projects.</p>
-                <div class="contact-links">
-                    <a href="https://mail.google.com/mail/?tab=rm&ogbl" class="contact-card">
-                        <i class="fas fa-envelope"></i>
-                        <h3>Email<br><h6>rabiart0338@gmail.com</h6></h3>
-                    </a>
-                    <a href="https://www.instagram.com/rabiumerbhatti/" class="contact-card">
-                        <i class="fab fa-instagram"></i>
-                        <h3>Instagram</h3>
-                    </a>
-                    
-                </div>
-            </div>
+            <div class="contact-section-content"><h2>Get In Touch</h2><p>I'm currently available for freelance work and open to discussing new projects.</p><div class="contact-links"><a href="mailto:rabiart0338@gmail.com" class="contact-card"><i class="fas fa-envelope"></i><h3>Email</h3><h6>rabiart0338@gmail.com</h6></a><a href="https://www.instagram.com/rabiumerbhatti/" target="_blank" rel="noopener noreferrer" class="contact-card"><i class="fab fa-instagram"></i><h3>Instagram</h3><h6>@rabiumerbhatti</h6></a></div></div>
         </section>
     </main>
 
-    <!-- The Modal/Lightbox for Projects -->
     <div id="image-modal" class="modal">
         <span class="close-button">×</span>
         <img class="modal-content" id="modal-image">
     </div>
 
-    <!-- All JavaScript will be here -->
     <script>
-        // --- JAVASCRIPT LOGIC ---
         document.addEventListener('DOMContentLoaded', () => {
 
-            // 1. PROJECT DATA
-            // To use your own local images, create an 'images' folder in the same
-            // directory as your HTML file. Then, change the `imageUrl` paths like so:
-            // { imageUrl: "images/pro1.jpg", alt: "Description of Project 1" },
-            // { imageUrl: "images/pro2.png", alt: "Description of Project 2" },
             const localProjects = [
-                { imageUrl: "banner.jpg" },
-                { imageUrl: "Youtube-banner-template.jpg" },
-                { imageUrl: "redesign thumb.jpg" },
-                { imageUrl: "janan.png" },
-                { imageUrl: "Classic Photo.jpg" },
-                { imageUrl: "my resume.jpg" },
-                { imageUrl: "food menu.jpg" },
-                { imageUrl: "biryani.jpg" },
-                { imageUrl: "new year.jpg" },
-                { imageUrl: "web banner.jpg" },
-                { imageUrl: "applewatch.jpg" },
-                { imageUrl: "LOS ANGELES.jpg" },
-                { imageUrl: "post.jpg" },
-                { imageUrl: "meraj e mustafa 2.jpg" },
-                { imageUrl: "banner1.jpg" },
-                { imageUrl: "AI +YOUTUBE.jpg" },
-                { imageUrl: "ai thumb.jpeg" },
-                { imageUrl: "body.jpg" },
-                { imageUrl: "sample.jpg" },
-                { imageUrl: "zorain tech.jpg" },
-                { imageUrl: "zorain rech.jpg" },
-                { imageUrl: "th.jpg" },
-                { imageUrl: "rabi ul awal.jpg" },
-                { imageUrl: "imnewyork.jpg" },
-                { imageUrl: "carrot.jpg" },
+                { imageUrl: "banner.jpg", alt: "Modern Web Banner Design" },
+                { imageUrl: "Youtube-banner-template.jpg", alt: "YouTube Channel Art Template" },
+                { imageUrl: "redesign thumb.jpg", alt: "Redesigned YouTube Thumbnail" },
+                { imageUrl: "janan.png", alt: "Janan Brand Logo Design" },
+                { imageUrl: "Classic Photo.jpg", alt: "Classic Style Photo Editing" },
+                { imageUrl: "my resume.jpg", alt: "Personal Resume Design" },
+                { imageUrl: "food menu.jpg", alt: "Restaurant Food Menu Design" },
+                { imageUrl: "biryani.jpg", alt: "Promotional Poster for Biryani" },
+                { imageUrl: "new year.jpg", alt: "Happy New Year Greeting Card" },
+                { imageUrl: "web banner.jpg", alt: "Corporate Web Banner" },
+                { imageUrl: "applewatch.jpg", alt: "Apple Watch Product Advertisement" },
+                { imageUrl: "LOS ANGELES.jpg", alt: "Los Angeles Themed Poster" },
+                { imageUrl: "post.jpg", alt: "Social Media Post Design" },
+                { imageUrl: "meraj e mustafa 2.jpg", alt: "Poster for Meraj-e-Mustafa Event" },
+                { imageUrl: "banner1.jpg", alt: "E-commerce Promotional Banner" },
+                { imageUrl: "AI +YOUTUBE.jpg", alt: "Thumbnail for an AI and YouTube video" },
+                { imageUrl: "ai thumb.jpeg", alt: "Artificial Intelligence Themed Thumbnail" },
+                { imageUrl: "body.jpg", alt: "Fitness and Bodybuilding Poster" },
+                { imageUrl: "sample.jpg", alt: "Sample Graphic Design Project" },
+                { imageUrl: "zorain tech.jpg", alt: "Zorain Tech Logo" },
+                { imageUrl: "zorain rech.jpg", alt: "Zorain Tech Branding" },
+                { imageUrl: "th.jpg", alt: "General Thumbnail Design" },
+                { imageUrl: "rabi ul awal.jpg", alt: "Rabi ul Awal Event Poster" },
+                { imageUrl: "imnewyork.jpg", alt: "I Am New York Themed Poster" },
+                { imageUrl: "carrot.jpg", alt: "Carrot Juice Product Advertisement" },
             ];
 
-            // 2. GLOBAL VARIABLES & STATE
             const navLinks = document.querySelectorAll('nav a');
             const pages = document.querySelectorAll('.page-section');
             const themeToggle = document.getElementById('theme-toggle');
             const body = document.body;
             const themeIcon = themeToggle.querySelector('i');
-            let projectsLoaded = false; // Flag to prevent re-loading projects
+            let projectsLoaded = false;
+            
+            // NEW: Back button and history management
+            const backButton = document.getElementById('back-button');
+            let pageHistory = [];
 
-            // 3. THEME TOGGLE LOGIC
             function applyTheme(theme) {
-                body.classList.remove('dark-theme', 'light-theme');
+                body.classList.remove('dark-theme');
+                themeIcon.classList.add('rotating');
                 if (theme === 'dark-theme') {
                     body.classList.add('dark-theme');
                     themeIcon.classList.remove('fa-moon');
                     themeIcon.classList.add('fa-sun');
                 } else {
-                    body.classList.add('light-theme');
                     themeIcon.classList.remove('fa-sun');
                     themeIcon.classList.add('fa-moon');
                 }
+                setTimeout(() => themeIcon.classList.remove('rotating'), 500);
                 localStorage.setItem('theme', theme);
             }
 
@@ -452,61 +494,75 @@ Let’s create something impactful together!
                 applyTheme(newTheme);
             });
 
-            // 4. NAVIGATION / PAGE SWITCHING LOGIC
-            function switchPage(pageId) {
+            // UPDATED: switchPage function to handle history and back button visibility
+            function switchPage(pageId, isBackNavigation = false) {
+                const currentPage = document.querySelector('.page-section.active');
+
+                if (!isBackNavigation && currentPage) {
+                    pageHistory.push(currentPage.id);
+                }
+
                 pages.forEach(page => page.classList.remove('active'));
                 const targetPage = document.getElementById(pageId);
-                if (targetPage) {
-                    targetPage.classList.add('active');
-                }
+                if (targetPage) targetPage.classList.add('active');
 
                 navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.dataset.page === pageId) {
-                        link.classList.add('active');
-                    }
+                    link.classList.toggle('active', link.dataset.page === pageId);
                 });
 
-                if (pageId === 'projects' && !projectsLoaded) {
-                    loadProjects();
+                // Control back button visibility
+                if (pageId === 'home') {
+                    backButton.classList.remove('visible');
+                } else {
+                    backButton.classList.add('visible');
                 }
+
+                window.scrollTo(0, 0);
+
+                if (pageId === 'projects' && !projectsLoaded) loadProjects();
             }
             
             navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    switchPage(link.dataset.page);
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Prevent adding to history if clicking the already active page
+                    if (!link.classList.contains('active')) {
+                        switchPage(link.dataset.page);
+                    }
                 });
             });
 
-            // 5. PROJECTS LOADING LOGIC
+            // NEW: Back button click event
+            backButton.addEventListener('click', () => {
+                if (pageHistory.length > 0) {
+                    const previousPageId = pageHistory.pop();
+                    switchPage(previousPageId, true); // True signifies a back navigation
+                }
+            });
+
             function loadProjects() {
                 projectsLoaded = true;
                 const projectGrid = document.getElementById('project-grid');
                 const loader = document.getElementById('loader');
-
                 loader.style.display = 'block';
                 projectGrid.innerHTML = '';
 
-                // Simulate a short delay to show the loader
                 setTimeout(() => {
-                    if (localProjects.length === 0) {
-                        projectGrid.innerHTML = '<p>No projects found. Check back later!</p>';
-                    } else {
-                        localProjects.forEach(project => {
+                    if (localProjects.length > 0) {
+                        localProjects.forEach((project, index) => {
                             const projectElement = document.createElement('div');
-                            projectElement.classList.add('project-item');
-                            projectElement.innerHTML = `<img src="${project.imageUrl}" alt="${project.alt}">`;
-                            
-                            projectElement.addEventListener('click', () => openModal(project.imageUrl, project.alt));
-                            
+                            projectElement.className = 'project-item';
+                            projectElement.style.setProperty('--i', index);
+                            const altText = project.alt || 'Project Image';
+                            projectElement.innerHTML = `<img src="${project.imageUrl}" alt="${altText}" loading="lazy" decoding="async">`;
+                            projectElement.addEventListener('click', () => openModal(project.imageUrl, altText));
                             projectGrid.appendChild(projectElement);
                         });
                     }
                     loader.style.display = 'none';
-                }, 500); // 0.5 second delay
+                }, 300); // Shorter delay for faster perceived load
             }
 
-            // 6. MODAL (LIGHTBOX) LOGIC
             const modal = document.getElementById('image-modal');
             const modalImage = document.getElementById('modal-image');
             const closeButton = document.querySelector('.close-button');
@@ -516,40 +572,32 @@ Let’s create something impactful together!
                 modalImage.src = imageUrl;
                 modalImage.alt = altText;
             }
-
             function closeModal() {
                 modal.style.display = 'none';
             }
-
             closeButton.addEventListener('click', closeModal);
-            window.addEventListener('click', (event) => {
-                if (event.target == modal) {
-                    closeModal();
-                }
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) closeModal();
             });
             
-            // 7. 3D HERO TEXT EFFECT
             const heroText = document.querySelector('.hero-text');
-            if (heroText) {
+            if (heroText && window.innerWidth > 1024) {
                 const heroSection = heroText.closest('.home-hero');
                 heroSection.addEventListener('mousemove', (e) => {
                     const { clientX, clientY } = e;
                     const { offsetWidth, offsetHeight } = heroSection;
-                    // Calculate rotation based on cursor position within the hero section
-                    const xRotation = (clientY / offsetHeight - 0.5) * -30; // Rotate on X-axis
-                    const yRotation = (clientX / offsetWidth - 0.5) * 30;  // Rotate on Y-axis
+                    const xRotation = (clientY / offsetHeight - 0.5) * -20;
+                    const yRotation = (clientX / offsetWidth - 0.5) * 20;
                     heroText.style.transform = `rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
                 });
                  heroSection.addEventListener('mouseleave', () => {
-                    heroText.style.transform = 'rotateX(0deg) rotateY(0deg)'; // Reset on mouse leave
+                    heroText.style.transform = 'rotateX(0deg) rotateY(0deg)';
                 });
             }
 
-
-            // 8. INITIALIZATION
             const savedTheme = localStorage.getItem('theme') || 'light-theme';
             applyTheme(savedTheme);
-            switchPage('home'); // Show home page on initial load
+            switchPage('home'); // Initial load
         });
     </script>
 </body>
