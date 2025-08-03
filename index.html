@@ -96,18 +96,17 @@
             right: 20px;
         }
         
-        /* NEW: Back Button Style */
         .back-button {
             top: 20px;
             left: 20px;
             opacity: 0;
             transform: scale(0.8);
-            pointer-events: none; /* Not clickable when hidden */
+            pointer-events: none;
         }
         .back-button.visible {
             opacity: 1;
             transform: scale(1);
-            pointer-events: auto; /* Clickable when visible */
+            pointer-events: auto;
         }
         
         .theme-toggle i.rotating {
@@ -166,6 +165,11 @@
         .page-section.active {
             display: block;
         }
+        /* NEW: Added position relative for the viewer */
+        #projects.page-section {
+            position: relative;
+        }
+
         #home.page-section.active {
             display: flex;
             flex-direction: column;
@@ -306,47 +310,79 @@
             transform: scale(1.1);
         }
 
-        /* --- Image Modal/Lightbox --- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1001;
-            padding: 20px;
+        /* --- NEW: Inline Project Viewer Styles --- */
+        .project-viewer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute; /* Relative to the #projects section */
             left: 0;
-            top: 0;
             width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(18, 18, 28, 0.98);
-            backdrop-filter: blur(8px);
-            animation: zoomIn 0.3s ease;
-        }
-        .modal-content {
-            margin: auto;
-            display: block;
-            max-width: 95vw;
-            max-height: 95vh;
-            border-radius: 10px;
-        }
-        .close-button {
-            position: absolute;
-            top: 20px;
-            right: 35px;
-            color: #f1f1f1;
-            font-size: 40px;
-            font-weight: bold;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-        .close-button:hover {
-            color: var(--primary-color);
-            transform: scale(1.2);
-        }
-        @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0;}
-            to { transform: scale(1); opacity: 1;}
+            z-index: 10;
+            background: var(--card-bg-color);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border-color);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px var(--shadow-color-hover);
+            margin-top: 30px; /* Space between row and viewer */
+            
+            /* Animation properties */
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            padding: 0 20px;
+            transition: max-height 0.6s ease-in-out, opacity 0.4s ease, padding 0.6s ease-in-out;
         }
 
+        .project-viewer.active {
+            max-height: 80vh; /* A large enough value to not clip the content */
+            opacity: 1;
+            padding: 20px;
+        }
+
+        .viewer-image-container {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        #viewer-image {
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 10px;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #viewer-image.fade-out {
+            opacity: 0;
+        }
+
+        .viewer-nav {
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 2rem;
+            padding: 1rem 1.5rem;
+            user-select: none;
+            transition: transform 0.2s ease, color 0.2s ease;
+        }
+        .viewer-nav:hover {
+            transform: scale(1.2);
+            color: var(--primary-color);
+        }
+
+        .close-viewer-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: transform 0.2s ease, color 0.2s ease;
+            line-height: 1;
+        }
+        .close-viewer-btn:hover {
+            transform: scale(1.2) rotate(90deg);
+            color: var(--primary-color);
+        }
+        
         /* --- Loader --- */
         .loader {
             border: 5px solid rgba(128, 128, 128, 0.2);
@@ -388,11 +424,12 @@
             .main-header nav a { padding: 8px 12px; font-size: 0.9rem; }
             .contact-links { flex-direction: column; align-items: center; gap: 20px; }
             .contact-card { width: 100%; max-width: 280px; }
+            .viewer-nav { padding: 0.5rem; font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- NEW: Back Button -->
+    <!-- Back Button -->
     <div id="back-button" class="ui-button back-button" role="button" aria-label="Go back">
         <i class="fas fa-arrow-left"></i>
     </div>
@@ -412,7 +449,7 @@
     </header>
 
     <main id="app-container">
-        <!-- All Page Sections remain the same -->
+        <!-- Page Sections -->
         <section id="home" class="page-section active">
             <div class="home-hero"><div class="hero-text"><h1>Rabi Umer Bhatti</h1><p>Creative Graphic Designer</p></div></div>
         </section>
@@ -420,17 +457,23 @@
             <div class="about-section-content"><h2>About Me</h2><p>Hi, I'm Rabi Umer – A Creative Graphic Designer. With 1 year of hands-on experience, I specialize in turning ideas into eye-catching visuals. From branding and social media graphics to logo design and marketing materials, I blend creativity with strategy to deliver designs that stand out and connect with your audience.</p><p>Passionate about clean aesthetics and modern design trends, I’m always exploring new techniques to bring fresh perspectives to every project. Let’s create something impactful together!</p></div>
         </section>
         <section id="projects" class="page-section">
-            <h2>My Work</h2><div id="loader" class="loader"></div><div class="project-grid" id="project-grid"></div>
+            <h2>My Work</h2>
+            <div id="loader" class="loader"></div>
+            <div class="project-grid" id="project-grid"></div>
+            <!-- NEW: Inline Project Viewer -->
+            <div id="project-viewer" class="project-viewer">
+                <span id="close-viewer-btn" class="close-viewer-btn" role="button" aria-label="Close viewer">×</span>
+                <span id="viewer-prev-btn" class="viewer-nav viewer-prev" role="button" aria-label="Previous image">❮</span>
+                <div class="viewer-image-container">
+                    <img id="viewer-image" src="" alt="Full size project image">
+                </div>
+                <span id="viewer-next-btn" class="viewer-nav viewer-next" role="button" aria-label="Next image">❯</span>
+            </div>
         </section>
         <section id="contact" class="page-section">
             <div class="contact-section-content"><h2>Get In Touch</h2><p>I'm currently available for freelance work and open to discussing new projects.</p><div class="contact-links"><a href="mailto:rabiart0338@gmail.com" class="contact-card"><i class="fas fa-envelope"></i><h3>Email</h3><h6>rabiart0338@gmail.com</h6></a><a href="https://www.instagram.com/rabiumerbhatti/" target="_blank" rel="noopener noreferrer" class="contact-card"><i class="fab fa-instagram"></i><h3>Instagram</h3><h6>@rabiumerbhatti</h6></a></div></div>
         </section>
     </main>
-
-    <div id="image-modal" class="modal">
-        <span class="close-button">×</span>
-        <img class="modal-content" id="modal-image">
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -455,7 +498,7 @@
                 { imageUrl: "AI +YOUTUBE.jpg", alt: "Thumbnail for an AI and YouTube video" },
                 { imageUrl: "ai thumb.jpeg", alt: "Artificial Intelligence Themed Thumbnail" },
                 { imageUrl: "body.jpg", alt: "Fitness and Bodybuilding Poster" },
-                { imageUrl: "sample.jpg", alt: "Sample Graphic Design Project" },
+                { imageUrl: "sample.jpg", alt: "Sample Graphic Design Project" }, 
                 { imageUrl: "zorain tech.jpg", alt: "Zorain Tech Logo" },
                 { imageUrl: "zorain rech.jpg", alt: "Zorain Tech Branding" },
                 { imageUrl: "th.jpg", alt: "General Thumbnail Design" },
@@ -471,9 +514,18 @@
             const themeIcon = themeToggle.querySelector('i');
             let projectsLoaded = false;
             
-            // NEW: Back button and history management
             const backButton = document.getElementById('back-button');
             let pageHistory = [];
+
+            // --- NEW: Variables for Inline Project Viewer ---
+            const projectViewer = document.getElementById('project-viewer');
+            const viewerImage = document.getElementById('viewer-image');
+            const closeViewerBtn = document.getElementById('close-viewer-btn');
+            const viewerPrevBtn = document.getElementById('viewer-prev-btn');
+            const viewerNextBtn = document.getElementById('viewer-next-btn');
+            const projectGrid = document.getElementById('project-grid');
+            let currentProjectIndex = 0;
+            let isViewerOpen = false;
 
             function applyTheme(theme) {
                 body.classList.remove('dark-theme');
@@ -495,92 +547,122 @@
                 applyTheme(newTheme);
             });
 
-            // UPDATED: switchPage function to handle history and back button visibility
             function switchPage(pageId, isBackNavigation = false) {
+                if (isViewerOpen) closeProjectViewer();
                 const currentPage = document.querySelector('.page-section.active');
-
-                if (!isBackNavigation && currentPage) {
-                    pageHistory.push(currentPage.id);
-                }
-
+                if (!isBackNavigation && currentPage) pageHistory.push(currentPage.id);
                 pages.forEach(page => page.classList.remove('active'));
                 const targetPage = document.getElementById(pageId);
                 if (targetPage) targetPage.classList.add('active');
-
-                navLinks.forEach(link => {
-                    link.classList.toggle('active', link.dataset.page === pageId);
-                });
-
-                // Control back button visibility
-                if (pageId === 'home') {
-                    backButton.classList.remove('visible');
-                } else {
-                    backButton.classList.add('visible');
-                }
-
+                navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageId));
+                backButton.classList.toggle('visible', pageId !== 'home');
                 window.scrollTo(0, 0);
-
                 if (pageId === 'projects' && !projectsLoaded) loadProjects();
             }
             
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
-                    // Prevent adding to history if clicking the already active page
-                    if (!link.classList.contains('active')) {
-                        switchPage(link.dataset.page);
-                    }
+                    if (!link.classList.contains('active')) switchPage(link.dataset.page);
                 });
             });
 
-            // NEW: Back button click event
             backButton.addEventListener('click', () => {
-                if (pageHistory.length > 0) {
-                    const previousPageId = pageHistory.pop();
-                    switchPage(previousPageId, true); // True signifies a back navigation
-                }
+                if (pageHistory.length > 0) switchPage(pageHistory.pop(), true);
             });
 
             function loadProjects() {
                 projectsLoaded = true;
-                const projectGrid = document.getElementById('project-grid');
                 const loader = document.getElementById('loader');
                 loader.style.display = 'block';
                 projectGrid.innerHTML = '';
 
                 setTimeout(() => {
-                    if (localProjects.length > 0) {
-                        localProjects.forEach((project, index) => {
-                            const projectElement = document.createElement('div');
-                            projectElement.className = 'project-item';
-                            projectElement.style.setProperty('--i', index);
-                            const altText = project.alt || 'Project Image';
-                            projectElement.innerHTML = `<img src="${project.imageUrl}" alt="${altText}" loading="lazy" decoding="async">`;
-                            projectElement.addEventListener('click', () => openModal(project.imageUrl, altText));
-                            projectGrid.appendChild(projectElement);
-                        });
-                    }
+                    localProjects.forEach((project, index) => {
+                        const projectElement = document.createElement('div');
+                        projectElement.className = 'project-item';
+                        projectElement.style.setProperty('--i', index);
+                        const altText = project.alt || 'Project Image';
+                        projectElement.innerHTML = `<img src="${project.imageUrl}" alt="${altText}" loading="lazy" decoding="async">`;
+                        projectElement.addEventListener('click', () => openProjectViewer(index, projectElement));
+                        projectGrid.appendChild(projectElement);
+                    });
                     loader.style.display = 'none';
-                }, 300); // Shorter delay for faster perceived load
+                }, 300);
             }
 
-            const modal = document.getElementById('image-modal');
-            const modalImage = document.getElementById('modal-image');
-            const closeButton = document.querySelector('.close-button');
-
-            function openModal(imageUrl, altText) {
-                modal.style.display = 'block';
-                modalImage.src = imageUrl;
-                modalImage.alt = altText;
-            }
-            function closeModal() {
-                modal.style.display = 'none';
-            }
-            closeButton.addEventListener('click', closeModal);
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) closeModal();
-            });
+            // --- PROJECT VIEWER FUNCTIONS (ALL NEW) ---
             
+            function openProjectViewer(index, clickedElement) {
+                // Find the last element in the clicked item's row
+                const items = Array.from(projectGrid.children);
+                let lastItemInRow = clickedElement;
+                for (let i = items.indexOf(clickedElement) + 1; i < items.length; i++) {
+                    if (items[i].offsetTop === clickedElement.offsetTop) {
+                        lastItemInRow = items[i];
+                    } else {
+                        break;
+                    }
+                }
+                
+                // Position the viewer below this row
+                const topPosition = lastItemInRow.offsetTop + lastItemInRow.offsetHeight;
+                projectViewer.style.top = `${topPosition}px`;
+
+                // If the viewer is already open in a different row, move it without closing animation
+                if (isViewerOpen) {
+                    projectViewer.style.transition = 'top 0.5s ease-in-out';
+                } else {
+                    projectViewer.style.transition = ''; // Use default CSS transition
+                }
+
+                showViewerImage(index);
+                if (!isViewerOpen) {
+                    projectViewer.classList.add('active');
+                    isViewerOpen = true;
+                    document.addEventListener('keydown', handleKeydown);
+                }
+                
+                // Scroll to the viewer
+                setTimeout(() => {
+                    projectViewer.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                }, 100); // Small delay to allow positioning
+            }
+
+            function closeProjectViewer() {
+                projectViewer.classList.remove('active');
+                isViewerOpen = false;
+                document.removeEventListener('keydown', handleKeydown);
+            }
+
+            function showViewerImage(index) {
+                currentProjectIndex = (index + localProjects.length) % localProjects.length;
+                const project = localProjects[currentProjectIndex];
+                
+                viewerImage.classList.add('fade-out');
+                setTimeout(() => {
+                    viewerImage.src = project.imageUrl;
+                    viewerImage.alt = project.alt || 'Project Image';
+                    viewerImage.classList.remove('fade-out');
+                }, 300);
+            }
+
+            function handleKeydown(e) {
+                if (e.key === 'ArrowRight') {
+                    showViewerImage(currentProjectIndex + 1);
+                } else if (e.key === 'ArrowLeft') {
+                    showViewerImage(currentProjectIndex - 1);
+                } else if (e.key === 'Escape') {
+                    closeProjectViewer();
+                }
+            }
+
+            closeViewerBtn.addEventListener('click', closeProjectViewer);
+            viewerNextBtn.addEventListener('click', () => showViewerImage(currentProjectIndex + 1));
+            viewerPrevBtn.addEventListener('click', () => showViewerImage(currentProjectIndex - 1));
+
+            // --- END OF VIEWER FUNCTIONS ---
+
             const heroText = document.querySelector('.hero-text');
             if (heroText && window.innerWidth > 1024) {
                 const heroSection = heroText.closest('.home-hero');
